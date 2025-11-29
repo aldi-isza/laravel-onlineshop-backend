@@ -52,27 +52,30 @@
                                 <div class="table-responsive">
                                     <table class="table-striped table">
                                         <tr>
-
                                             <th>Name</th>
                                             <th>Category</th>
                                             <th>Price</th>
                                             <th>Stock</th>
-                                            <th>Created At</th>
+                                            <th>Image</th>
                                             <th>Action</th>
                                         </tr>
                                         @foreach ($products as $product)
                                             <tr>
-
-                                                <td>{{ $product->name }}
+                                                <td>{{ $product->name }}</td>
+                                                <td>{{ $product->category->name }}</td>
+                                                <td>{{ $product->price }}</td>
+                                                <td>{{ $product->stock }}</td>
+                                                <td>
+                                                    @if($product->image)
+                                                        @if(Str::startsWith($product->image, ['http://', 'https://']))
+                                                            <img src="{{ $product->image }}" alt="Product Image" width="60">
+                                                        @else
+                                                            <img src="{{ asset('storage/products/' . $product->image) }}" alt="Product Image" width="60">
+                                                        @endif
+                                                    @else
+                                                        <span class="text-muted">No Image</span>
+                                                    @endif
                                                 </td>
-                                                <td>{{ $product->category->name }}
-                                                </td>
-                                                <td>{{ $product->price }}
-                                                </td>
-                                                <td>{{ $product->stock }}
-                                                </td>
-
-                                                <td>{{ $product->created_at }}</td>
                                                 <td>
                                                     <div class="d-flex justify-content-center">
                                                         <a href='{{ route('product.edit', $product->id) }}'

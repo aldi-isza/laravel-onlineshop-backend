@@ -30,7 +30,7 @@
 
 
                 <div class="card">
-                    <form action="{{ route('product.update', $product) }}" method="POST">
+                    <form action="{{ route('product.update', $product) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="card-header">
@@ -92,15 +92,31 @@
 
                             <div class="form-group">
                                 <label>Photo Product</label>
-                                <div class="col-sm-9">
-                                    <input type="file" class="form-control" name="image"
-                                        @error('image') is-invalid @enderror>
-                                </div>
-                                @error('image')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 mb-2 mb-md-0 text-center">
+                                        <div id="current-image-preview" class="border rounded p-2 bg-light">
+                                            @if($product->image)
+                                                @if(Str::startsWith($product->image, ['http://', 'https://']))
+                                                    <img id="img-preview" src="{{ $product->image }}" alt="Current Image" class="img-fluid rounded" style="max-height: 150px;">
+                                                @else
+                                                    <img id="img-preview" src="{{ asset('storage/products/' . $product->image) }}" alt="Current Image" class="img-fluid rounded" style="max-height: 150px;">
+                                                @endif
+                                            @else
+                                                <img id="img-preview" src="https://ui-avatars.com/api/?name=No+Image&background=eee&color=555" alt="No Image" class="img-fluid rounded" style="max-height: 150px;">
+                                            @endif
+                                            <div class="small text-muted mt-1">Current Photo</div>
+                                        </div>
                                     </div>
-                                @enderror
+                                    <div class="col-md-8">
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror" name="image" accept="image/*" onchange="previewImage(event)">
+                                        @error('image')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
+                                        <div class="small text-muted mt-2">Choose a new photo to replace the current one.</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer text-right">
@@ -115,4 +131,16 @@
 @endsection
 
 @push('scripts')
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('img-preview').src = e.target.result;
+        };
+        if(input.files && input.files[0]) {
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
 @endpush

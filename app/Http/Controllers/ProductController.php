@@ -50,13 +50,21 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = \App\Models\Product::findOrFail($id);
-        //if image is not empty, then update the image
-        if ($request->image) {
+
+        // Update data selain gambar
+        $product->name = $request->name;
+        $product->price = (int) $request->price;
+        $product->stock = (int) $request->stock;
+        $product->category_id = $request->category_id;
+
+        // Jika ada file gambar baru
+        if ($request->hasFile('image')) {
             $filename = time() . '.' . $request->image->extension();
             $request->image->storeAs('public/products', $filename);
             $product->image = $filename;
         }
-        $product->update($request->all());
+
+        $product->save();
 
         return redirect()->route('product.index')->with('success', 'Product updated successfully');
     }
